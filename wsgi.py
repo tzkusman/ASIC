@@ -3,6 +3,7 @@ import os
 import sys
 import urllib.request
 import urllib.error
+import time
 from flask import Flask, request, Response
 
 # Add current directory to path
@@ -18,10 +19,14 @@ app = Flask(__name__)
 def proxy(path):
     """Proxy all requests to backend"""
     try:
-        # Build URL
+        # Build URL with cache-busting timestamp
         url = f'{BACKEND_URL}/{path}'
         if request.query_string:
-            url = f'{url}?{request.query_string.decode()}'
+            url = f'{url}?{request.query_string.decode()}&t={int(time.time())}'
+        else:
+            # Add timestamp for cache busting on GET requests
+            if request.method == 'GET':
+                url = f'{url}?t={int(time.time())}'
         
         # Prepare request body
         body = request.get_data()
@@ -40,10 +45,16 @@ def proxy(path):
             status_code = resp.status
             response_headers = dict(resp.headers)
             
-            # Add cache-busting headers
-            response_headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+            # Remove Cache-Control from backend response (override it)
+            if 'Cache-Control' in response_headers:
+                del response_headers['Cache-Control']
+            
+            # Add aggressive cache-busting headers
+            response_headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0, public'
             response_headers['Pragma'] = 'no-cache'
             response_headers['Expires'] = '0'
+            response_headers['X-Vercel-Cache'] = 'BYPASS'
+            response_headers['CDN-Cache-Control'] = 'no-cache'
             
             return Response(
                 response_body,

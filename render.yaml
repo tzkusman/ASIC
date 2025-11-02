@@ -1,0 +1,23 @@
+{
+  "name": "CryptoMinerPro",
+  "description": "ASIC Mining Equipment Marketplace with Real-time Profitability Analysis",
+  "buildCommand": "pip install -r requirements.txt",
+  "startCommand": "gunicorn wsgi:app",
+  "env": [
+    {
+      "key": "FLASK_ENV",
+      "value": "production"
+    },
+    {
+      "key": "SECRET_KEY",
+      "value": "crypto-miner-pro-secret-render-2025"
+    }
+  ],
+  "services": [
+    {
+      "type": "pserv",
+      "name": "CryptoMinerPro-DB",
+      "plan": "free"
+    }
+  ]
+}

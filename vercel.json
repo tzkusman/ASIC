@@ -1,27 +1,14 @@
 {
-  "name": "cryptominerpro-api",
-  "version": "1.0.0",
-  "description": "ASIC Mining Equipment Marketplace API",
+  "name": "CryptoMinerPro",
+  "version": 2,
   "buildCommand": "pip install -r requirements.txt",
-  "runtime": "python3.11",
-  "functions": {
-    "api": {
-      "runtime": "python3.11",
-      "handler": "run.app",
-      "environment": {
-        "FLASK_ENV": "production"
-      }
-    }
-  },
   "env": {
-    "DATABASE_URL": {
-      "description": "PostgreSQL database URL"
-    },
-    "REDIS_URL": {
-      "description": "Redis connection URL"
-    },
-    "SECRET_KEY": {
-      "description": "Flask secret key"
+    "FLASK_ENV": "production",
+    "SECRET_KEY": "@changeme-in-vercel-secrets"
+  },
+  "functions": {
+    "wsgi.py": {
+      "runtime": "python3.11"
     }
   }
 }

@@ -1,5 +1,15 @@
 {
   "version": 2,
-  "buildCommand": "echo 'Static site - no build needed'",
-  "outputDirectory": "public"
+  "builds": [
+    {
+      "src": "wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "wsgi.py"
+    }
+  ]
 }

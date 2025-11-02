@@ -1,30 +1,21 @@
 """WSGI entry point for Vercel deployment"""
 import os
 import sys
+from flask import Flask, redirect
 
 # Add current directory to path
 sys.path.insert(0, os.path.dirname(__file__))
 
-from app import create_app, db
-from app.models import User, ASICMiner
+# Get backend URL from environment or use ngrok URL
+BACKEND_URL = os.environ.get('BACKEND_URL', 'https://07dbabc61f8f.ngrok-free.app')
 
-# Create app for Vercel - with error handling for serverless
-try:
-    app = create_app(os.environ.get('FLASK_ENV', 'production'))
-except Exception as e:
-    print(f"Error creating app: {e}")
-    # Fallback for Vercel issues
-    from flask import Flask
-    app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mining_marketplace.db'
-    
-    @app.route('/')
-    def home():
-        return "Server starting...", 503
+app = Flask(__name__)
 
-@app.shell_context_processor
-def make_shell_context():
-    return {'db': db, 'User': User, 'ASICMiner': ASICMiner}
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def redirect_to_backend(path):
+    """Redirect all requests to the ngrok backend"""
+    return redirect(f'{BACKEND_URL}/{path}', code=307)
 
 # For local development
 if __name__ == '__main__':

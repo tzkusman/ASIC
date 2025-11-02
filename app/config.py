@@ -18,14 +18,13 @@ class Config:
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
     
-    # Cache configuration
-    CACHE_TYPE = 'redis'
-    CACHE_REDIS_URL = os.environ.get('REDIS_URL') or 'redis://localhost:6379/0'
+    # Cache configuration (disabled for Vercel)
+    CACHE_TYPE = 'simple'
     CACHE_DEFAULT_TIMEOUT = 300
     
-    # Celery configuration
-    CELERY_BROKER_URL = os.environ.get('REDIS_URL') or 'redis://localhost:6379/0'
-    CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL') or 'redis://localhost:6379/0'
+    # Celery configuration (disabled for Vercel)
+    CELERY_BROKER_URL = os.environ.get('REDIS_URL', '')
+    CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', '')
     
     # Pagination
     ITEMS_PER_PAGE = 12
@@ -45,10 +44,14 @@ class ProductionConfig(Config):
     """Production configuration"""
     DEBUG = False
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'postgresql://user:password@localhost/mining_marketplace'
+    # Use SQLite for Vercel serverless (or PostgreSQL if DATABASE_URL provided)
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///mining_marketplace.db'
     
     if SQLALCHEMY_DATABASE_URI and SQLALCHEMY_DATABASE_URI.startswith('postgres://'):
         SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace('postgres://', 'postgresql://', 1)
+    
+    # Disable session cookie secure for testing
+    SESSION_COOKIE_SECURE = False
 
 class TestingConfig(Config):
     """Testing configuration"""

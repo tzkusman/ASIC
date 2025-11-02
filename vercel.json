@@ -1,13 +1,19 @@
 {
   "version": 2,
-  "buildCommand": "pip install -r requirements.txt",
+  "builds": [
+    {
+      "src": "wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "wsgi.py"
+    }
+  ],
   "env": {
     "FLASK_ENV": "production",
     "SECRET_KEY": "crypto-miner-pro-secret-2025-vercel-deployment"
-  },
-  "functions": {
-    "wsgi.py": {
-      "runtime": "python3.11"
-    }
   }
 }

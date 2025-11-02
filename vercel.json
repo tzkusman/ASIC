@@ -1,10 +1,9 @@
 {
-  "name": "CryptoMinerPro",
   "version": 2,
   "buildCommand": "pip install -r requirements.txt",
   "env": {
     "FLASK_ENV": "production",
-    "SECRET_KEY": "@changeme-in-vercel-secrets"
+    "SECRET_KEY": "crypto-miner-pro-secret-2025-vercel-deployment"
   },
   "functions": {
     "wsgi.py": {

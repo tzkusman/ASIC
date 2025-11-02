@@ -1,0 +1,27 @@
+{
+  "name": "CryptoMinerPro",
+  "description": "ASIC Mining Equipment Marketplace",
+  "repository": "https://github.com/tzkusman/ASIC",
+  "keywords": ["python", "flask", "mining", "asic"],
+  "addons": [
+    {
+      "plan": "heroku-postgresql:hobby-dev",
+      "as": "DATABASE"
+    }
+  ],
+  "env": {
+    "FLASK_ENV": {
+      "description": "Flask environment",
+      "value": "production"
+    },
+    "SECRET_KEY": {
+      "description": "Secret key for Flask",
+      "value": "crypto-miner-pro-heroku-secret-2025"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}

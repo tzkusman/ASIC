@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoMinerPro - ASIC Mining Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0066ff;
+            --primary-dark: #0052cc;
+            --secondary: #00d9ff;
+            --dark: #1a1a2e;
+            --darker: #16213e;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7ff 0%, #f8f9ff 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .navbar {
+            background: linear-gradient(90deg, var(--dark) 0%, var(--darker) 100%);
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .navbar-brand {
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 50%, var(--primary) 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+        
+        .alert-info {
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.1), rgba(0, 102, 255, 0.05));
+            border-left: 4px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-dark navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">CryptoMinerPro</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#marketplace">Marketplace</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="container">
+            <h1>CryptoMinerPro</h1>
+            <p>Your Enterprise Solution for ASIC Mining Equipment</p>
+            <div class="alert alert-info mx-auto" style="max-width: 600px;">
+                <strong>🔗 Connecting to Backend...</strong>
+                <p id="status" class="mb-0">Connecting to your PC backend at 192.168.100.99:5000</p>
+            </div>
+            <a href="#" class="btn btn-primary btn-lg me-2" onclick="goToBackend(); return false;">
+                Open Full App on Your PC
+            </a>
+        </div>
+    </div>
+
+    <!-- Info Section -->
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>📝 How to Access CryptoMinerPro</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>Your backend is running on your PC:</h6>
+                        <code style="background: #f0f0f0; padding: 10px; border-radius: 5px; display: block;">
+                            http://192.168.100.99:5000
+                        </code>
+                        
+                        <h6 class="mt-3">Login Credentials:</h6>
+                        <ul>
+                            <li><strong>Username:</strong> admin</li>
+                            <li><strong>Password:</strong> admin123</li>
+                        </ul>
+                        
+                        <h6 class="mt-3">Features Available:</h6>
+                        <ul>
+                            <li>✅ Browse ASIC Miners</li>
+                            <li>✅ Real-time Profitability Calculator</li>
+                            <li>✅ User Dashboard</li>
+                            <li>✅ Admin Panel</li>
+                            <li>✅ Shopping Cart & Favorites</li>
+                            <li>✅ Mining Equipment Database</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <div class="container">
+            <p>CryptoMinerPro © 2025 | Backend running on your PC</p>
+            <p>
+                <a href="https://github.com/tzkusman/ASIC" target="_blank" class="text-decoration-none text-light">
+                    📌 View on GitHub
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Check if backend is accessible
+        async function checkBackend() {
+            try {
+                const response = await fetch('http://192.168.100.99:5000/api/miners', {
+                    method: 'GET',
+                    mode: 'no-cors'
+                });
+                document.getElementById('status').innerHTML = '✅ Backend Connected! Click button below to access the full app.';
+            } catch (error) {
+                document.getElementById('status').innerHTML = '⚠️ Backend not accessible. Make sure your PC is on and backend is running.';
+            }
+        }
+        
+        function goToBackend() {
+            window.open('http://192.168.100.99:5000', '_blank');
+        }
+        
+        checkBackend();
+        setInterval(checkBackend, 5000);
+    </script>
+</body>
+</html>

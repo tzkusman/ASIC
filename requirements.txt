@@ -9,4 +9,4 @@ SQLAlchemy==2.0.23
 python-dotenv==1.0.0
 requests==2.31.0
 BeautifulSoup4==4.12.2
-lxml==4.9.3
+Jinja2==3.1.6

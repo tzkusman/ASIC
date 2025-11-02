@@ -145,4 +145,5 @@ def update_crypto_prices():
     print("Cryptocurrency prices updated")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use use_reloader=False to prevent reload issues on Windows
+    app.run(debug=False, host='0.0.0.0', port=5000)

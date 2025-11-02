@@ -22,6 +22,23 @@ def init_db():
     """Initialize database with sample data"""
     db.create_all()
     
+    # Add admin user
+    admin_user = User.query.filter_by(username='admin').first()
+    if not admin_user:
+        admin = User(
+            username='admin',
+            email='admin@cryptominerpro.com',
+            company_name='CryptoMinerPro',
+            country='United States',
+            phone='+1 (555) 123-4567',
+            is_verified=True,
+            is_admin=True
+        )
+        admin.set_password('admin123')
+        db.session.add(admin)
+        db.session.commit()
+        print("Admin user created: admin / admin123")
+    
     # Add sample miners
     sample_miners = [
         {

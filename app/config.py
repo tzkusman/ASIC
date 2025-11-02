@@ -44,9 +44,11 @@ class ProductionConfig(Config):
     """Production configuration"""
     DEBUG = False
     TESTING = False
-    # Use SQLite for Vercel serverless (or PostgreSQL if DATABASE_URL provided)
+    # For Railway: Use PostgreSQL (DATABASE_URL provided automatically)
+    # Falls back to SQLite for local development
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///mining_marketplace.db'
     
+    # Handle postgres:// -> postgresql:// for newer SQLAlchemy
     if SQLALCHEMY_DATABASE_URI and SQLALCHEMY_DATABASE_URI.startswith('postgres://'):
         SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace('postgres://', 'postgresql://', 1)
     

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}My Favorites - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">My Favorite Miners</h1>
+    
+    {% if favorites.items %}
+    <div class="row g-4">
+        {% for miner in favorites.items %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-microchip fa-5x text-secondary"></i>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ miner.name }}</h5>
+                    <p class="card-text text-muted small">{{ miner.manufacturer }}</p>
+                    <ul class="list-unstyled small">
+                        <li><strong>Hash Rate:</strong> {{ miner.hash_rate }} TH/s</li>
+                        <li><strong>Price:</strong> ${{ "%.2f"|format(miner.price_usd) }}</li>
+                    </ul>
+                </div>
+                <div class="card-footer bg-white border-top">
+                    <a href="{{ url_for('marketplace.miner_detail', miner_id=miner.id) }}" class="btn btn-sm btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if favorites.pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if favorites.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('dashboard.favorites', page=favorites.prev_num) }}">Previous</a>
+            </li>
+            {% endif %}
+            {% for page_num in favorites.iter_pages() %}
+                {% if page_num %}
+                <li class="page-item {% if page_num == favorites.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('dashboard.favorites', page=page_num) }}">{{ page_num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+            {% if favorites.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('dashboard.favorites', page=favorites.next_num) }}">Next</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    {% else %}
+    <div class="alert alert-info">
+        <p class="mb-0">You haven't added any favorites yet. <a href="{{ url_for('marketplace.browse') }}">Browse miners</a></p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

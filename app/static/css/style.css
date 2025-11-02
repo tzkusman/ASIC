@@ -1,0 +1,189 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Gradients */
+.bg-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Hover Effects */
+.hover-lift {
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Text Links */
+.text-light-hover {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.text-light-hover:hover {
+    color: #667eea;
+}
+
+/* Cards */
+.card {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-bottom: 2px solid #f8f9fa;
+    font-weight: 600;
+}
+
+/* Buttons */
+.btn-outline-heart {
+    border: 1px solid #dee2e6;
+    color: #6c757d;
+    background: transparent;
+    padding: 0.25rem 0.5rem;
+}
+
+.btn-outline-heart.liked {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-outline-heart:hover {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+/* Badges */
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Forms */
+.form-control:focus,
+.form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Specs Section */
+.specs {
+    background-color: #f8f9fa;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+}
+
+/* Navbar */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Hero Section */
+.hero-section {
+    border-bottom: 3px solid #667eea;
+}
+
+/* Footer */
+footer {
+    border-top: 3px solid #667eea;
+    margin-top: auto;
+}
+
+footer a {
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: #667eea !important;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+}
+
+/* Sticky Top Fix */
+.sticky-top {
+    top: 60px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .display-6 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Social Links */
+.social-links a {
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #667eea !important;
+    transform: translateY(-3px);
+}
+
+/* Price Display */
+.price-display {
+    font-size: 1.75rem;
+    color: #667eea;
+    font-weight: 700;
+}
+
+/* Loading State */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #764ba2;
+}

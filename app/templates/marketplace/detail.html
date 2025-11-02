@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}{{ miner.name }} - CryptoMinerPro{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('marketplace.browse') }}">Marketplace</a></li>
+            <li class="breadcrumb-item active">{{ miner.name }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row mb-4">
+        <!-- Product Image -->
+        <div class="col-md-5 mb-4">
+            <div class="card">
+                <div class="card-body bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <div class="text-center">
+                        <i class="fas fa-microchip fa-10x text-secondary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Product Details -->
+        <div class="col-md-7">
+            <div class="mb-3">
+                <span class="badge bg-primary">{{ miner.algorithm }}</span>
+                <span class="badge bg-secondary">{{ miner.manufacturer }}</span>
+                <span class="badge bg-success">In Stock: {{ miner.stock_quantity }}</span>
+            </div>
+            
+            <h1 class="mb-2">{{ miner.name }}</h1>
+            <p class="text-muted mb-3">Model: {{ miner.model }}</p>
+            
+            {% if miner.get_average_rating() > 0 %}
+            <div class="mb-3">
+                <div class="d-flex align-items-center">
+                    {% for i in range(miner.get_average_rating()|int) %}<i class="fas fa-star text-warning"></i>{% endfor %}
+                    <span class="ms-2">{{ "%.1f"|format(miner.get_average_rating()) }} stars</span>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Technical Specifications -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Technical Specifications</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Hash Rate:</strong> {{ miner.hash_rate }} TH/s</p>
+                            <p><strong>Power Consumption:</strong> {{ miner.power_consumption }}W</p>
+                            <p><strong>Efficiency Rating:</strong> {{ "%.2f"|format(miner.power_consumption / miner.hash_rate) }} J/GH</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Algorithm:</strong> {{ miner.algorithm }}</p>
+                            <p><strong>Release Year:</strong> {{ miner.release_year or 'N/A' }}</p>
+                            <p><strong>Manufacturer:</strong> {{ miner.manufacturer }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profitability Analysis -->
+            {% if profitability %}
+            <div class="card mb-4 border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Profitability Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-success">${{ "%.2f"|format(profitability.daily_profit_usd) }} per day</h6>
+                            <small class="text-muted">Net profit after electricity costs</small>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>{{ "%.0f"|format(profitability.roi_days) }} days ROI</h6>
+                            <small class="text-muted">Return on Investment</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row small">
+                        <div class="col-6">Monthly Profit: <strong>${{ "%.2f"|format(profitability.monthly_profit_usd) }}</strong></div>
+                        <div class="col-6">Yearly Profit: <strong>${{ "%.2f"|format(profitability.yearly_profit_usd) }}</strong></div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Price and Buy Section -->
+            <div class="card border-primary mb-4">
+                <div class="card-body">
+                    <h3 class="text-primary mb-3">${{ "%.2f"|format(miner.price_usd) }}</h3>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Quantity:</span>
+                        <input type="number" class="form-control" id="quantity" value="1" min="1" max="{{ miner.stock_quantity }}">
+                    </div>
+                    <button class="btn btn-primary btn-lg w-100 mb-2" onclick="addToCart()">
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </button>
+                    <button class="btn btn-outline-primary w-100" onclick="toggleFavorite()">
+                        <i class="far fa-heart"></i> Add to Favorites
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Description -->
+    {% if miner.description %}
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Description</h5>
+                </div>
+                <div class="card-body">
+                    {{ miner.description }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Reviews Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Customer Reviews ({{ reviews|length }})</h5>
+                </div>
+                <div class="card-body">
+                    {% if reviews %}
+                        {% for review in reviews %}
+                        <div class="mb-3 pb-3 border-bottom">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ review.title }}</h6>
+                                    <small class="text-muted">by {{ review.author.username }} - {{ review.created_at.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                <div>
+                                    {% for i in range(review.rating) %}<i class="fas fa-star text-warning"></i>{% endfor %}
+                                </div>
+                            </div>
+                            <p class="mb-0 mt-2">{{ review.content }}</p>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <p class="text-muted">No reviews yet. Be the first to review!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Products -->
+    {% if related_miners %}
+    <div class="row">
+        <div class="col-12">
+            <h4 class="mb-4">Similar Products</h4>
+        </div>
+        {% for related in related_miners %}
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                    <i class="fas fa-microchip fa-4x text-secondary"></i>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">{{ related.name }}</h6>
+                    <p class="card-text small text-muted">{{ related.manufacturer }}</p>
+                    <p class="text-primary fw-bold">${{ "%.2f"|format(related.price_usd) }}</p>
+                </div>
+                <div class="card-footer bg-white border-top">
+                    <a href="{{ url_for('marketplace.miner_detail', miner_id=related.id) }}" class="btn btn-sm btn-outline-primary w-100">View</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function addToCart() {
+    const quantity = document.getElementById('quantity').value;
+    alert('Added ' + quantity + ' unit(s) to cart! (Shopping cart functionality to be implemented)');
+}
+
+function toggleFavorite() {
+    alert('Added to favorites! (Functionality to be implemented)');
+}
+</script>
+{% endblock %}

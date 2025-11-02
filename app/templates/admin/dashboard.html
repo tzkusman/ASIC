@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Admin Dashboard</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Miners</h5>
+                    <h2 class="text-primary">{{ total_miners }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Users</h5>
+                    <h2 class="text-success">{{ total_users }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Orders</h5>
+                    <h2 class="text-info">{{ total_orders }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Revenue</h5>
+                    <h2 class="text-warning">${{ "%.2f"|format(total_revenue/1000) }}K</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Admin Actions</h5>
+        </div>
+        <div class="card-body">
+            <a href="{{ url_for('admin.manage_miners') }}" class="btn btn-primary me-2"><i class="fas fa-microchip"></i> Manage Miners</a>
+            <a href="{{ url_for('admin.add_miner') }}" class="btn btn-success"><i class="fas fa-plus"></i> Add New Miner</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

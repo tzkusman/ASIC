@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Add Miner - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="mb-4">Add New Miner</h1>
+            
+            <div class="card">
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Miner Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="manufacturer" class="form-label">Manufacturer *</label>
+                                <input type="text" class="form-control" id="manufacturer" name="manufacturer" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="model" class="form-label">Model *</label>
+                                <input type="text" class="form-control" id="model" name="model" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="algorithm" class="form-label">Algorithm *</label>
+                                <select class="form-select" id="algorithm" name="algorithm" required>
+                                    <option value="">Select Algorithm</option>
+                                    <option value="SHA-256">SHA-256 (Bitcoin)</option>
+                                    <option value="Scrypt">Scrypt (Litecoin)</option>
+                                    <option value="Ethash">Ethash (Ethereum)</option>
+                                    <option value="Kheavyhash">Kheavyhash (Kaspa)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="hash_rate" class="form-label">Hash Rate (TH/s) *</label>
+                                <input type="number" class="form-control" id="hash_rate" name="hash_rate" step="0.1" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="power_consumption" class="form-label">Power Consumption (W) *</label>
+                                <input type="number" class="form-control" id="power_consumption" name="power_consumption" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="price_usd" class="form-label">Price (USD) *</label>
+                                <input type="number" class="form-control" id="price_usd" name="price_usd" step="0.01" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="stock_quantity" class="form-label">Stock Quantity *</label>
+                                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" value="0" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="release_year" class="form-label">Release Year</label>
+                            <input type="number" class="form-control" id="release_year" name="release_year" min="2020">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Add Miner</button>
+                        <a href="{{ url_for('admin.manage_miners') }}" class="btn btn-outline-secondary w-100 mt-2">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

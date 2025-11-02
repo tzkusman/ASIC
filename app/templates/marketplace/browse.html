@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Marketplace - CryptoMinerPro{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="container">
+        <h1 class="mb-4">Mining Equipment Marketplace</h1>
+        
+        <div class="row">
+            <!-- Filters Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <div class="card sticky-top" style="top: 80px;">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Filters</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="GET" id="filterForm">
+                            <!-- Algorithm Filter -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Algorithm</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="algorithm" value="SHA-256" id="algo1">
+                                    <label class="form-check-label" for="algo1">SHA-256 (Bitcoin)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="algorithm" value="Scrypt" id="algo2">
+                                    <label class="form-check-label" for="algo2">Scrypt (Litecoin)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="algorithm" value="Ethash" id="algo3">
+                                    <label class="form-check-label" for="algo3">Ethash (Ethereum)</label>
+                                </div>
+                            </div>
+                            
+                            <!-- Manufacturer Filter -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Manufacturer</label>
+                                <select class="form-select form-select-sm" name="manufacturer">
+                                    <option value="">All Manufacturers</option>
+                                    {% for mfg in manufacturers %}
+                                    <option value="{{ mfg }}">{{ mfg }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Price Filter -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Price Range</label>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <input type="number" class="form-control form-control-sm" name="min_price" placeholder="Min">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="number" class="form-control form-control-sm" name="max_price" placeholder="Max">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Sort -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Sort By</label>
+                                <select class="form-select form-select-sm" name="sort">
+                                    <option value="newest">Newest</option>
+                                    <option value="price_low">Price: Low to High</option>
+                                    <option value="price_high">Price: High to Low</option>
+                                    <option value="profitability">Most Profitable</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                            <a href="{{ url_for('marketplace.browse') }}" class="btn btn-outline-secondary w-100 mt-2">Clear</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Miners Grid -->
+            <div class="col-lg-9">
+                <div class="mb-3 d-flex justify-content-between align-items-center">
+                    <span class="text-muted">Showing {{ miners.items|length }} of {{ miners.total }} miners</span>
+                    <a href="{{ url_for('marketplace.compare') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-exchange-alt"></i> Compare
+                    </a>
+                </div>
+                
+                <div class="row g-4">
+                    {% for miner in miners.items %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm hover-lift">
+                            <div class="card-img-top bg-gradient d-flex align-items-center justify-content-center" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <i class="fas fa-microchip fa-5x text-white"></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h5 class="card-title">{{ miner.name }}</h5>
+                                        <p class="card-text text-muted small">{{ miner.manufacturer }}</p>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-heart" onclick="toggleFavorite({{ miner.id }})">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="specs mb-3 small">
+                                    <div class="mb-1"><strong>Hash Rate:</strong> {{ miner.hash_rate }} TH/s</div>
+                                    <div class="mb-1"><strong>Power:</strong> {{ miner.power_consumption }}W</div>
+                                    <div class="mb-1"><strong>Algorithm:</strong> {{ miner.algorithm }}</div>
+                                    <div class="mb-1"><strong>Efficiency:</strong> {{ "%.2f"|format(miner.power_consumption / miner.hash_rate) }} J/GH</div>
+                                </div>
+                                
+                                {% set profitability = miner.get_latest_profitability() %}
+                                {% if profitability %}
+                                <div class="alert alert-success py-2 px-3 small mb-3">
+                                    <strong>${{ "%.2f"|format(profitability.daily_profit_usd) }}/day</strong>
+                                    <br><small>ROI: {{ "%.0f"|format(profitability.roi_days) }} days</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer bg-white border-top">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="h5 mb-0 text-primary">${{ "%.2f"|format(miner.price_usd) }}</span>
+                                    <a href="{{ url_for('marketplace.miner_detail', miner_id=miner.id) }}" class="btn btn-sm btn-primary">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if miners.pages > 1 %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if miners.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('marketplace.browse', page=miners.prev_num) }}">Previous</a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for page_num in miners.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num == miners.page %}
+                                <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                                {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('marketplace.browse', page=page_num) }}">{{ page_num }}</a>
+                                </li>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if miners.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('marketplace.browse', page=miners.next_num) }}">Next</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleFavorite(minerId) {
+    const button = event.target.closest('button');
+    const isLiked = button.classList.contains('liked');
+    
+    const url = isLiked ? 
+        `/api/miner/${minerId}/remove-from-favorites` : 
+        `/api/miner/${minerId}/add-to-favorites`;
+    
+    fetch(url, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                button.classList.toggle('liked');
+                button.innerHTML = isLiked ? '<i class="far fa-heart"></i>' : '<i class="fas fa-heart"></i>';
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

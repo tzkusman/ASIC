@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Home - CryptoMinerPro{% endblock %}
+
+{% block content %}
+<div class="hero-section bg-gradient text-white py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container">
+        <div class="row align-items-center py-5">
+            <div class="col-md-6">
+                <h1 class="display-4 fw-bold mb-4">Welcome to CryptoMinerPro</h1>
+                <p class="lead mb-4">Your ultimate destination for ASIC mining equipment. Buy, compare, and analyze profitability with real-time data.</p>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('marketplace.browse') }}" class="btn btn-light btn-lg">Browse Miners</a>
+                    <a href="{{ url_for('dashboard.profitability_calculator') }}" class="btn btn-outline-light btn-lg">Calculate ROI</a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <img src="https://via.placeholder.com/500x400?text=Mining+Hardware" alt="Mining Hardware" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Miners Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="mb-4 text-center">Featured Mining Equipment</h2>
+        <div class="row g-4">
+            {% for miner in featured_miners %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm hover-lift">
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fas fa-microchip fa-5x text-white"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ miner.name }}</h5>
+                        <p class="card-text text-muted small">{{ miner.manufacturer }} - {{ miner.model }}</p>
+                        <ul class="list-unstyled small">
+                            <li><strong>Hash Rate:</strong> {{ miner.hash_rate }} TH/s</li>
+                            <li><strong>Power:</strong> {{ miner.power_consumption }}W</li>
+                            <li><strong>Algorithm:</strong> {{ miner.algorithm }}</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer bg-white border-top">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0">${{ "%.2f"|format(miner.price_usd) }}</span>
+                            <a href="{{ url_for('marketplace.miner_detail', miner_id=miner.id) }}" class="btn btn-sm btn-primary">View</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Top Profitable Miners Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="mb-4 text-center">Top Profitable Miners</h2>
+        <div class="row">
+            {% for miner in top_profitable %}
+            {% set profitability = miner.get_latest_profitability() %}
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100 border-success">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ miner.name }}</h6>
+                        {% if profitability %}
+                        <p class="mb-2">
+                            <span class="badge bg-success">Daily: ${{ "%.2f"|format(profitability.daily_profit_usd) }}</span>
+                        </p>
+                        <small class="text-muted d-block">ROI: {{ "%.0f"|format(profitability.roi_days) }} days</small>
+                        {% endif %}
+                        <a href="{{ url_for('marketplace.miner_detail', miner_id=miner.id) }}" class="btn btn-sm btn-outline-success mt-2">Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Calculator Widget Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-calculator"></i> Quick Profitability Calculator</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="quickCalcForm" class="row g-3">
+                            <div class="col-md-6">
+                                <label for="calcMiner" class="form-label">Select Miner</label>
+                                <select class="form-select" id="calcMiner">
+                                    <option value="">Choose a miner...</option>
+                                    {% for miner in featured_miners %}
+                                    <option value="{{ miner.id }}">{{ miner.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="calcElectricity" class="form-label">Electricity Cost ($/kWh)</label>
+                                <input type="number" class="form-control" id="calcElectricity" value="0.12" step="0.01">
+                            </div>
+                            <div class="col-12">
+                                <button type="button" class="btn btn-primary w-100" onclick="calculateQuickProfit()">
+                                    <i class="fas fa-chart-line"></i> Calculate
+                                </button>
+                            </div>
+                            <div class="col-12" id="calcResult" style="display: none;">
+                                <div class="alert alert-info">
+                                    <h6>Daily Profit: <span id="profitDaily">$0.00</span></h6>
+                                    <small>Monthly: <span id="profitMonthly">$0.00</span> | Yearly: <span id="profitYearly">$0.00</span></small>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="mb-4 text-center">Why Choose CryptoMinerPro?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="display-6 text-primary mb-3"><i class="fas fa-bolt"></i></div>
+                    <h5>Real-Time Data</h5>
+                    <p>Access live profitability calculations and cryptocurrency prices updated every minute.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="display-6 text-success mb-3"><i class="fas fa-shield-alt"></i></div>
+                    <h5>Verified Sellers</h5>
+                    <p>Buy from trusted equipment dealers with buyer protection and warranty support.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="display-6 text-info mb-3"><i class="fas fa-globe"></i></div>
+                    <h5>Global Shipping</h5>
+                    <p>Fast and secure international delivery with real-time tracking on all orders.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function calculateQuickProfit() {
+    const minerId = document.getElementById('calcMiner').value;
+    const electricityCost = parseFloat(document.getElementById('calcElectricity').value);
+    
+    if (!minerId) {
+        alert('Please select a miner');
+        return;
+    }
+    
+    fetch(`/api/miner/${minerId}/profitability?electricity_cost=${electricityCost}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const prof = data.data;
+                document.getElementById('profitDaily').textContent = '$' + prof.daily_net_profit.toFixed(2);
+                document.getElementById('profitMonthly').textContent = '$' + prof.monthly_net_profit.toFixed(2);
+                document.getElementById('profitYearly').textContent = '$' + prof.yearly_net_profit.toFixed(2);
+                document.getElementById('calcResult').style.display = 'block';
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Profitability Calculator{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>Mining Profitability Calculator</h1>
+            <p class="text-muted">Calculate your potential mining profits based on current network conditions</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <form id="calcForm">
+                        <div class="mb-3">
+                            <label for="minerSelect" class="form-label">Select Miner</label>
+                            <select class="form-select" id="minerSelect" required>
+                                <option value="">Choose a miner...</option>
+                                {% for miner in miners %}
+                                <option value="{{ miner.id }}" data-hash="{{ miner.hash_rate }}" data-power="{{ miner.power_consumption }}" data-price="{{ miner.price_usd }}">
+                                    {{ miner.name }} - ${{ "%.2f"|format(miner.price_usd) }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="electricityCost" class="form-label">Electricity Cost ($/kWh)</label>
+                                <input type="number" class="form-control" id="electricityCost" value="0.12" step="0.01" min="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="poolFee" class="form-label">Pool Fee (%)</label>
+                                <input type="number" class="form-control" id="poolFee" value="1" step="0.1" min="0" max="100">
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn btn-primary w-100" onclick="runCalculation()">Calculate Profitability</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card" id="resultCard" style="display: none;">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Profitability Results</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <h6>Daily Profit</h6>
+                            <h3 class="text-success" id="dailyProfit">-</h3>
+                        </div>
+                        <div class="col-6">
+                            <h6>ROI</h6>
+                            <h3 id="roi">-</h3>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-6 mb-2">
+                            <small class="text-muted">Monthly Profit:</small>
+                            <h6 id="monthlyProfit">-</h6>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <small class="text-muted">Yearly Profit:</small>
+                            <h6 id="yearlyProfit">-</h6>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <small class="text-muted">Daily Revenue:</small>
+                            <h6 id="dailyRevenue">-</h6>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <small class="text-muted">Daily Electricity Cost:</small>
+                            <h6 id="dailyElectricity">-</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function runCalculation() {
+    const minerId = document.getElementById('minerSelect').value;
+    const electricityCost = parseFloat(document.getElementById('electricityCost').value);
+    
+    if (!minerId) {
+        alert('Please select a miner');
+        return;
+    }
+    
+    fetch(`/api/miner/${minerId}/profitability?electricity_cost=${electricityCost}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const prof = data.data;
+                document.getElementById('dailyProfit').textContent = '$' + prof.daily_net_profit.toFixed(2);
+                document.getElementById('monthlyProfit').textContent = '$' + prof.monthly_net_profit.toFixed(2);
+                document.getElementById('yearlyProfit').textContent = '$' + prof.yearly_net_profit.toFixed(2);
+                document.getElementById('dailyRevenue').textContent = '$' + prof.daily_revenue.toFixed(2);
+                document.getElementById('dailyElectricity').textContent = '$' + prof.daily_electricity_cost.toFixed(2);
+                document.getElementById('roi').textContent = prof.roi_days.toFixed(0) + ' days';
+                document.getElementById('resultCard').style.display = 'block';
+            }
+        })
+        .catch(error => {
+            alert('Error calculating profitability: ' + error.message);
+        });
+}
+</script>
+{% endblock %}

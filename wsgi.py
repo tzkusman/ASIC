@@ -39,11 +39,16 @@ def proxy(path):
             timeout=30
         )
         
-        # Return response
+        # Return response with cache-busting headers
+        response_headers = dict(resp.headers)
+        response_headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        response_headers['Pragma'] = 'no-cache'
+        response_headers['Expires'] = '0'
+        
         return Response(
             resp.content,
             status=resp.status_code,
-            headers=dict(resp.headers)
+            headers=response_headers
         )
     except requests.exceptions.ConnectionError:
         return "Backend offline. Make sure your PC is running.", 503

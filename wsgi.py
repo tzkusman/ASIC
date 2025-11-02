@@ -9,7 +9,7 @@ from flask import Flask, request, Response
 sys.path.insert(0, os.path.dirname(__file__))
 
 # Backend URL - ngrok public tunnel
-BACKEND_URL = 'https://07dbabc61f8f.ngrok-free.app'
+BACKEND_URL = 'https://f21eb9c64b5a.ngrok-free.app'
 
 app = Flask(__name__)
 
